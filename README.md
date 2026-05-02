@@ -1,64 +1,113 @@
 # Montana Cities Transportation and Walkability Analysis
 
-This project analyzes transportation emissions and walkability indices for cities in Montana, providing insights into sustainable transportation patterns.
+## Final Year Project Submission
 
-## Overview
+This repository contains a complete data science project for final year assessment, analyzing transportation emissions and walkability across Montana cities. The project combines data engineering, exploratory analysis, visual analytics, and evidence-driven recommendations.
 
-The analysis explores the relationship between vehicle usage, greenhouse gas emissions, and walkability in Montana cities. Using data from the EPA and other sources, we identify cities that may benefit from improved walkability infrastructure to reduce emissions.
+## Project Abstract
 
-## Key Findings
+Transportation is a major source of greenhouse gas emissions in the United States. This project evaluates the relationship between vehicle-based emissions and walkability in Montana cities. By identifying cities with high per-capita emissions and low walkability scores, the analysis supports targeted sustainability interventions.
 
-- **Data Scope**: Analysis of 129 Montana cities
-- **Emissions Range**: Combined GHG emissions per capita range from 2.05 to 47.90 metric tons CO2 equivalent
-- **Walkability**: National Walkability Index averages 7.61 across Montana cities
-- **High Priority Cities**: 7 cities identified with high emissions and low walkability that could benefit from transportation improvements
+## Objectives
 
-## Files
+- Clean and prepare city-level transportation and walkability data
+- Explore the distribution of emissions and walkability metrics
+- Analyze correlations between vehicle use and urban walkability
+- Identify Montana cities with the greatest potential for emission reduction through walkability improvements
+- Produce clear visualizations and a reproducible Jupyter notebook
 
-- `montana_analysis.ipynb` - Complete Jupyter notebook with data loading, cleaning, analysis, and visualizations
-- `cleaned_full_city_data.csv` - Processed city-level data
-- `processed_city_data.csv` - Final processed dataset
-- `figures/` - Generated plots and interactive visualizations
-- `NotesFor603Team.docx` - Original project notes
+## Data Description
 
-## Data Sources
+The repository includes the following datasets:
 
-- City-level transportation and emissions data
-- Walkability indices from EPA Smart Location Database
-- Census block group mappings
+- `full_city_data_DATA603.csv` - Raw city-level transportation and emissions data
+- `cleaned_full_city_data.csv` - Processed dataset used in the analysis
+- `city_blockgroup_pairs_DATA603.csv` - Mapping between cities and census block groups
+- `cleaned_city_blockgroup_pairs.csv` - Cleaned block group mapping data
+- `processed_city_data.csv` - Final cleaned data produced by the notebook
 
-## Analysis Includes
+### Key features in the data
 
-1. **Data Cleaning**: Handling missing values and invalid data
-2. **Exploratory Data Analysis**: Statistical summaries and distributions
-3. **Correlation Analysis**: Relationships between emissions and walkability
-4. **Visualizations**:
-   - Distribution plots
-   - Correlation heatmaps
-   - Scatter plots
-   - Interactive Plotly charts
-5. **City Rankings**: Top emitters and cities needing improvement
+- `miles_driven_pC`: Miles driven per capita
+- `agg_combined_emitGHG_pC`: Combined greenhouse gas emissions per capita
+- `wlk_NatWalkInd_avg`: National Walkability Index average
+- Walkability dimensions such as `wlk_D2A_EPHHM_avg`, `wlk_D2B_E8MIXA_avg`, `wlk_D3B_avg`, and `wlk_D4A_avg`
+
+## Methodology
+
+1. **Data Loading**
+   - Load cleaned city-level data into a Jupyter notebook
+   - Filter to Montana cities using the `state_abbr` column
+
+2. **Data Preparation**
+   - Replace invalid sentinel values (`-99998`, `-99999`) with `NaN`
+   - Convert numeric fields and check for missing values
+
+3. **Exploratory Data Analysis**
+   - Compute descriptive statistics
+   - Plot distributions for population, vehicle miles, emissions, and walkability
+
+4. **Correlation and Relationship Analysis**
+   - Generate correlation matrices for emissions and walkability measures
+   - Build scatter plots showing how walkability associates with miles driven and emissions
+
+5. **Priority City Identification**
+   - Flag cities in the top quartile of emissions and bottom quartile of walkability
+   - Highlight locations with the highest potential impact from sustainable transport planning
+
+## Results Summary
+
+- The project analyzes **129 Montana cities** after filtering to the target state.
+- **Combined GHG emissions per capita** range from roughly 2.0 to 47.9 metric tons CO₂e.
+- The **average National Walkability Index** for Montana cities is approximately 7.6.
+- **Seven cities** were identified as high-priority targets for emission reduction through walkability improvement.
+
+## Output and Deliverables
+
+- `montana_analysis.ipynb` - Main analysis notebook with narrative, code, and results
+- `processed_city_data.csv` - Cleaned dataset generated by the analysis
+- `figures/` - Collection of static and interactive visualizations
+- `README.md` - Project documentation and instructions
 
 ## How to Run
 
-### Option 1: Google Colab
-1. Upload `montana_analysis.ipynb` to Google Colab
-2. Upload the data files (`cleaned_full_city_data.csv`)
-3. Run all cells (dependencies are pre-installed or can be installed)
+### Local Setup
+1. Install Python 3.8 or higher
+2. Install dependencies:
+   ```bash
+   pip install pandas numpy matplotlib seaborn plotly
+   ```
+3. Launch Jupyter Lab or Notebook:
+   ```bash
+   jupyter notebook
+   ```
+4. Open `montana_analysis.ipynb` and run all cells.
 
-### Option 2: Local Environment
-1. Install Python 3.7+
-2. Install required packages: `pip install pandas numpy matplotlib seaborn plotly`
-3. Run the Jupyter notebook
+### Google Colab
+1. Upload `montana_analysis.ipynb` to Colab
+2. Upload `cleaned_full_city_data.csv` and other required CSV files
+3. Run the notebook cells in order
 
-## Results
+## Project Structure
 
-The analysis identifies specific Montana cities where investments in walkability could significantly reduce transportation emissions. Interactive visualizations allow exploration of the data relationships.
+- `montana_analysis.ipynb`
+- `README.md`
+- `cleaned_full_city_data.csv`
+- `processed_city_data.csv`
+- `figures/`
+- `NotesFor603Team.docx`
+
+## Future Work
+
+- Perform geospatial analysis with city boundaries and block group locations
+- Incorporate demographic and socioeconomic factors
+- Extend analysis to other states or nationwide datasets
+- Develop a web dashboard for interactive exploration
 
 ## Contributors
 
-Montana Analysis Team
+- Final Year Project Team
 
-## License
+## Notes
 
-This project is for educational and research purposes.
+This work is prepared as a final year project submission and is intended for academic evaluation and planning support. The results are based on the provided transportation and walkability datasets for Montana cities.
