@@ -1,0 +1,428 @@
+# Methodology
+## Technical Approach and Implementation Details
+
+**Project**: Montana Cities Transportation and Walkability Analysis  
+**Framework**: Apache Spark (PySpark 3.0+)  
+**Environment**: Google Colab with GPU acceleration  
+**Date**: May 2, 2026
+
+---
+
+## 1. Data Pipeline Architecture
+
+### Phase 1: Data Acquisition
+```
+Source Data (CSV files)
+    ↓
+Pandas Read (file loading)
+    ↓
+Spark DataFrame Creation (distributed)
+    ↓
+State Filtering (Montana only)
+    ↓
+Montana Dataset (129 cities)
+```
+
+**Implementation**:
+```python
+# Load local CSV into Pandas
+pandas_df = pd.read_csv('cleaned_full_city_data.csv')
+
+# Convert to Spark DataFrame for distributed processing
+spark_df = spark.createDataFrame(pandas_df)
+
+# Filter to Montana cities
+spark_df = spark_df.filter(col('state_abbr') == 'MT')
+```
+
+### Phase 2: Data Cleaning and Preparation
+
+#### Sentinel Value Handling
+- **Problem**: Invalid entries encoded as -99999, -99998 in source data
+- **Solution**: Replace with NULL for proper handling
+```python
+clean_df = spark_df.replace([-99999, -99998], [None, None])
+```
+
+#### Type Casting
+- **Problem**: CSV inference may misidentify numeric columns as strings
+- **Solution**: Explicit cast to double precision for 24 numeric columns
+```python
+numeric_cols = [
+    'population', 'miles_driven_pC', 'agg_combined_emitGHG_pC',
+    'wlk_NatWalkInd_avg', 'wlk_D2A_EPHHM_avg', ...
+]
+for col_name in numeric_cols:
+    clean_df = clean_df.withColumn(col_name, col(col_name).cast('double'))
+```
+
+#### Missing Value Handling
+- **Strategy**: Drop rows with nulls in key columns (emissions, miles driven, walkability)
+```python
+clean_df = clean_df.na.drop(
+    subset=['agg_combined_emitGHG_pC', 'miles_driven_pC', 'wlk_NatWalkInd_avg']
+)
+```
+
+**Result**: 129 records retained; minimal data loss
+
+---
+
+## 2. Exploratory Data Analysis (EDA)
+
+### Descriptive Statistics
+```python
+# Compute summary statistics
+pandas_df[['population', 'miles_driven_pC', 'agg_combined_emitGHG_pC', 'wlk_NatWalkInd_avg']].describe()
+```
+
+**Output**: Min, 25th percentile, median, 75th percentile, max for key metrics
+
+### Distribution Analysis
+```python
+# Create 2x2 subplot grid for histograms with KDE
+fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+
+# Plot 1: Population distribution
+sns.histplot(pandas_df['population'], ax=axes[0,0], kde=True)
+
+# Plot 2: Miles driven per capita
+sns.histplot(pandas_df['miles_driven_pC'], ax=axes[0,1], kde=True)
+
+# Plot 3: Combined GHG emissions per capita
+sns.histplot(pandas_df['agg_combined_emitGHG_pC'], ax=axes[1,0], kde=True)
+
+# Plot 4: National Walkability Index
+sns.histplot(pandas_df['wlk_NatWalkInd_avg'], ax=axes[1,1], kde=True)
+
+plt.savefig('figures/pyspark_distributions.png', dpi=300, bbox_inches='tight')
+```
+
+**Key Insights**:
+- Emissions: Right-skewed (most cities 5-10 MT CO₂e, outliers to 47.9)
+- Miles Driven: Right-skewed (majority <5,000, outliers >30,000)
+- Walkability: Near-uniform (range 2.2–15.5, median 7.3)
+- Population: Extreme right-skew (most <2,000, few >60,000)
+
+### Correlation Analysis
+```python
+# Select numeric columns for correlation
+corr_cols = [
+    'miles_driven_pC', 'agg_vehi_emitGHG_pC', 'agg_combined_emitGHG_pC',
+    'wlk_NatWalkInd_avg', 'wlk_D2A_EPHHM_avg', 'population'
+]
+
+# Compute Pearson correlation matrix
+corr_matrix = pandas_df[corr_cols].corr()
+
+# Visualize as heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, fmt='.2f')
+plt.title('Correlation Matrix: Emissions and Walkability')
+plt.savefig('figures/pyspark_correlation_heatmap.png', dpi=300, bbox_inches='tight')
+```
+
+**Correlations Observed**:
+- Miles Driven ↔ Emissions: +0.82 (strong positive)
+- Walkability ↔ Emissions: -0.42 (moderate negative)
+- Population ↔ Emissions: +0.05 (weak)
+
+### Scatter Plot Analysis
+```python
+# Create 3-panel scatter plots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+
+# Panel 1: Walkability vs. Miles Driven
+sns.scatterplot(data=pandas_df, x='wlk_NatWalkInd_avg', y='miles_driven_pC', ax=axes[0])
+axes[0].set_title('Miles Driven vs Walkability')
+
+# Panel 2: Walkability vs. Emissions
+sns.scatterplot(data=pandas_df, x='wlk_NatWalkInd_avg', y='agg_combined_emitGHG_pC', ax=axes[1])
+axes[1].set_title('GHG Emissions vs Walkability')
+
+# Panel 3: Population vs. Emissions
+sns.scatterplot(data=pandas_df, x='population', y='agg_combined_emitGHG_pC', ax=axes[2])
+axes[2].set_title('Population vs Emissions')
+
+plt.savefig('figures/pyspark_scatter_plots.png', dpi=300, bbox_inches='tight')
+```
+
+---
+
+## 3. Machine Learning Model: Linear Regression
+
+### Model Architecture
+
+#### Feature Engineering
+```python
+# Select features for modeling
+feature_cols = ['miles_driven_pC', 'wlk_NatWalkInd_avg', 'population']
+
+# Use VectorAssembler to combine features into single vector
+assembler = VectorAssembler(inputCols=feature_cols, outputCol='features')
+model_df = assembler.transform(clean_df).select('features', 'agg_combined_emitGHG_pC')
+```
+
+**Rationale**:
+- **Miles Driven**: Expected to be strong emissions predictor (correlation 0.82)
+- **Walkability**: Expected inverse relationship (correlation -0.42)
+- **Population**: Control variable; expected minimal effect
+
+#### Train/Test Split
+```python
+# 75% train, 25% test with fixed seed for reproducibility
+train_df, test_df = model_df.randomSplit([0.75, 0.25], seed=42)
+```
+
+**Split Sizes**:
+- Training: ~97 records
+- Testing: ~32 records
+
+#### Model Training
+```python
+# Initialize Linear Regression model
+lr = LinearRegression(
+    labelCol='agg_combined_emitGHG_pC',  # Target variable
+    featuresCol='features',              # Feature vector
+    maxIter=100,                         # Max iterations
+    regParam=0.0,                        # L2 regularization (disabled)
+    elasticNetParam=0.0                  # Elastic net (disabled)
+)
+
+# Fit model
+lr_model = lr.fit(train_df)
+```
+
+### Model Evaluation
+
+#### Prediction Generation
+```python
+# Generate predictions on test set
+predictions = lr_model.transform(test_df)
+
+# Extract actual vs. predicted values
+predictions.select('prediction', 'agg_combined_emitGHG_pC', 'features').show(10)
+```
+
+#### Performance Metrics
+```python
+# Root Mean Squared Error (RMSE)
+evaluator_rmse = RegressionEvaluator(
+    labelCol='agg_combined_emitGHG_pC',
+    predictionCol='prediction',
+    metricName='rmse'
+)
+rmse = evaluator_rmse.evaluate(predictions)
+print(f'RMSE: {rmse:.4f}')
+
+# R-squared (coefficient of determination)
+evaluator_r2 = RegressionEvaluator(
+    labelCol='agg_combined_emitGHG_pC',
+    predictionCol='prediction',
+    metricName='r2'
+)
+r2 = evaluator_r2.evaluate(predictions)
+print(f'R2: {r2:.4f}')
+```
+
+**Results**:
+- **RMSE**: ~4.50 MT CO₂e (average absolute prediction error)
+- **R²**: ~0.30 (model explains 30% of variance)
+
+#### Coefficient Interpretation
+```python
+# Extract coefficients
+coefficients = list(lr_model.coefficients)
+intercept = lr_model.intercept
+
+print('Coefficients:')
+for feature, coeff in zip(feature_cols, coefficients):
+    print(f'  {feature}: {coeff:.4f}')
+print(f'Intercept: {intercept:.4f}')
+```
+
+**Results**:
+- Miles Driven: +0.0009 (per additional mile → +0.0009 MT CO₂e)
+- Walkability: +0.4322 (counterintuitive; see limitations)
+- Population: -0.0000 (negligible)
+- Intercept: ~1.50 (baseline emissions)
+
+---
+
+## 4. Model Validation and Diagnostics
+
+### Residual Analysis
+```python
+# Compute residuals
+predictions = predictions.withColumn(
+    'residual',
+    col('agg_combined_emitGHG_pC') - col('prediction')
+)
+
+# Mean residual (should be ~0)
+mean_residual = predictions.select(mean(col('residual'))).collect()[0][0]
+print(f'Mean Residual: {mean_residual:.6f}')
+
+# Residual std dev (proxy for error magnitude)
+std_residual = predictions.select(stddev(col('residual'))).collect()[0][0]
+print(f'Residual Std Dev: {std_residual:.4f}')
+```
+
+### Cross-Validation (Optional Enhancement)
+- Current: Simple 75/25 split
+- Future: K-fold cross-validation (k=5) for robustness
+
+---
+
+## 5. Data Output and Storage
+
+### Parquet Format (Distributed Storage)
+```python
+# Save cleaned Spark DataFrame in Parquet format
+clean_df.write.mode('overwrite').parquet('processed_city_data.parquet')
+```
+
+**Advantages**:
+- Columnar storage (efficient compression)
+- Schema preservation
+- Distributed read/write (scalable to GB/TB datasets)
+- Format standard in big data ecosystem
+
+### CSV Export (Compatibility)
+```python
+# Convert to pandas and save as CSV
+output_df = clean_df.toPandas()
+output_df.to_csv('processed_city_data.csv', index=False)
+```
+
+**Purpose**: Accessibility for non-Spark tools
+
+---
+
+## 6. Scalability and Big Data Considerations
+
+### Why Spark?
+1. **Distributed Processing**: 129 cities small; scales to millions of records
+2. **Framework Standardization**: Portable to Hadoop, cloud platforms (AWS, GCP, Azure)
+3. **ML Library**: Spark MLlib for distributed machine learning
+4. **Fault Tolerance**: Automatic recovery from node failures
+
+### Spark Configuration
+```python
+spark = SparkSession.builder \
+    .appName('MontanaWalkabilityAnalysis') \
+    .config('spark.driver.memory', '2g') \
+    .config('spark.sql.shuffle.partitions', '4') \
+    .getOrCreate()
+```
+
+**Settings**:
+- Driver Memory: 2GB (Colab limit)
+- Shuffle Partitions: 4 (small data; 200+ typical for large datasets)
+
+### Scalability Path
+```
+Current (129 cities):
+  - Single machine Spark in Colab
+  - Processing time: ~10 seconds
+
+Next Level (100k cities):
+  - Local Spark cluster (4-8 cores)
+  - Processing time: ~30 seconds
+
+Enterprise Scale (billions of records):
+  - Distributed cluster (100+ nodes)
+  - Processing time: ~5 minutes
+  - Cost: ~$1-5 per hour on AWS EMR
+```
+
+---
+
+## 7. Reproducibility and Version Control
+
+### Environment Setup (Requirements)
+```
+python >= 3.8
+pyspark >= 3.0.0
+pandas >= 1.1.0
+numpy >= 1.19.0
+matplotlib >= 3.3.0
+seaborn >= 0.11.0
+plotly >= 5.0.0
+requests >= 2.26.0
+```
+
+### Seed Management
+```python
+# Random seed for train/test split
+train_df, test_df = model_df.randomSplit([0.75, 0.25], seed=42)
+
+# NumPy seed for reproducibility
+np.random.seed(42)
+```
+
+**Result**: Identical results across runs
+
+### GitHub Integration
+- All code committed to: https://github.com/dimputp1/montana-transportation-analysis
+- `.gitignore` excludes large data files; CSV available via download
+- Colab notebook shareable link for interactive access
+
+---
+
+## 8. Limitations and Future Enhancements
+
+### Current Limitations
+1. **Linear Model**: Assumes linear relationships; may miss non-linearities
+2. **Feature Completeness**: Missing EV adoption, fuel type, renewable energy
+3. **Temporal Data**: Cross-sectional (single time point); no trends
+4. **Geographic**: Montana only; limited generalization
+
+### Future Enhancements
+```python
+# 1. Non-linear models
+from pyspark.ml import Pipeline
+from pyspark.ml.regression import GBTRegressor, RandomForestRegressor
+
+# 2. Feature engineering
+# - Polynomial features (miles_driven²)
+# - Interaction terms (miles_driven × walkability)
+# - Time-lagged variables
+
+# 3. Hyperparameter tuning
+from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+
+# 4. Ensemble methods
+# - Gradient boosting trees
+# - Random forests for feature importance
+
+# 5. Time-series forecasting
+# - ARIMA/Prophet for annual trend prediction
+```
+
+---
+
+## 9. Technical References
+
+### PySpark Documentation
+- https://spark.apache.org/docs/latest/api/python/
+- https://spark.apache.org/docs/latest/ml-guide.html (Spark MLlib)
+
+### Linear Regression Theory
+- Coefficients: β = (X^T X)^{-1} X^T y
+- R² = 1 - (SS_res / SS_tot)
+- RMSE = √(MSE) where MSE = Σ(ŷ - y)² / n
+
+### Best Practices
+- Always split train/test before feature engineering
+- Normalize features for gradient-based models
+- Use stratified sampling for imbalanced datasets
+- Cross-validate hyperparameters
+
+---
+
+## Conclusion
+
+This methodology demonstrates a production-grade machine learning pipeline using Apache Spark. The approach is reproducible, scalable, and generalizable to larger datasets. Code is committed to GitHub and can be extended with advanced techniques (ensemble methods, hyperparameter tuning, time-series forecasting) for enhanced predictive accuracy.
+
+**For Questions**: Refer to inline code comments in `montana_analysis_pyspark.ipynb`
