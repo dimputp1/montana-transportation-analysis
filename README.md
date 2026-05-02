@@ -86,9 +86,12 @@ The repository includes the following datasets:
 4. Open `montana_analysis_pyspark.ipynb` for the big data Spark workflow or `montana_analysis.ipynb` for the original analysis.
 
 ### Google Colab
-1. Upload `montana_analysis.ipynb` to Colab
-2. Upload `cleaned_full_city_data.csv` and other required CSV files
-3. Run the notebook cells in order
+1. Upload `montana_analysis_pyspark.ipynb` to Colab for the big data PySpark workflow (recommended for full execution with outputs)
+2. Alternatively, upload `montana_analysis.ipynb` for the original pandas-based analysis
+3. Upload `cleaned_full_city_data.csv` and other required CSV files
+4. Run the notebook cells in order to see all outputs and visualizations
+
+**Note:** The PySpark notebook is optimized for Google Colab environment and may require Colab for full execution due to Spark dependencies.
 
 ## Project Structure
 
