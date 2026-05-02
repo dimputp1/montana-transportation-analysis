@@ -1,0 +1,34 @@
+# Montana Transportation Analysis - Requirements
+# DATA 603 Big Data Analytics Final Project
+# Python dependencies for reproducible analysis
+
+# Core data processing and analysis
+pandas>=1.3.0
+numpy>=1.19.0
+
+# Apache Spark for distributed computing
+pyspark>=3.0.0
+
+# Data visualization
+matplotlib>=3.3.0
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Jupyter notebook support
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Development and testing
+pytest>=6.0.0
+black>=21.0.0
+flake8>=3.9.0
+
+# Optional: for enhanced notebook experience
+jupyterlab>=3.0.0
+widgetsnbextension>=3.5.0
+
+# System requirements:
+# - Python 3.8+
+# - Java 8+ (for Spark)
+# - 8GB RAM recommended
+# - Google Colab compatible
