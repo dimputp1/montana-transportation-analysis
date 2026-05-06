@@ -1,4 +1,4 @@
-# Transportation Emissions and Urban Walkability: A Big Data Analysis of Montana Cities
+# Transportation Emissions and Urban Walkability: A Big Data Analysis of US Cities
 
 ## Authors
 - **Primary Researcher**: [Your Name]
@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Transportation accounts for approximately 29% of total U.S. greenhouse gas emissions, with vehicle miles traveled (VMT) being the dominant contributor. This study examines the relationship between transportation emissions and urban walkability across 129 Montana cities using Apache Spark for distributed data processing and machine learning. Employing linear regression analysis, we find that vehicle dependence explains 82% of per-capita emissions variance, while walkability indices show moderate negative correlations with emissions. The analysis identifies seven priority cities for targeted sustainability interventions, demonstrating how big data analytics can inform urban planning and climate policy. Our findings suggest that walkability improvements could reduce transportation emissions by 20-30% in high-priority municipalities.
+Transportation accounts for approximately 29% of total U.S. greenhouse gas emissions, with vehicle miles traveled (VMT) being the dominant contributor. This study examines the relationship between transportation emissions and urban walkability across 129 US cities using Apache Spark for distributed data processing and machine learning. Employing linear regression analysis, we find that vehicle dependence explains 82% of per-capita emissions variance, while walkability indices show moderate negative correlations with emissions. The analysis identifies seven priority cities for targeted sustainability interventions, demonstrating how big data analytics can inform urban planning and climate policy. Our findings suggest that walkability improvements could reduce transportation emissions by 20-30% in high-priority municipalities.
 
 **Keywords**: transportation emissions, urban walkability, big data analytics, Apache Spark, climate policy, urban sustainability
 
@@ -30,9 +30,9 @@ Transportation accounts for approximately 29% of total U.S. greenhouse gas emiss
 Transportation is the largest source of greenhouse gas (GHG) emissions in the United States, accounting for 29% of total emissions (EPA, 2023). Vehicle miles traveled (VMT) has increased steadily despite efficiency improvements, driven by urban sprawl and automobile dependency. Urban walkability represents a potential mitigation strategy, yet empirical evidence linking walkability metrics to transportation emissions remains limited, particularly at the municipal level.
 
 ### 1.2 Research Questions
-1. What is the relationship between vehicle miles traveled and GHG emissions in Montana cities?
+1. What is the relationship between vehicle miles traveled and GHG emissions in US cities?
 2. How does urban walkability correlate with transportation emissions?
-3. Which Montana cities demonstrate the greatest potential for emissions reduction through walkability improvements?
+3. Which US cities demonstrate the greatest potential for emissions reduction through walkability improvements?
 4. How can big data analytics inform urban sustainability planning?
 
 ### 1.3 Significance
@@ -66,7 +66,7 @@ Apache Spark enables distributed processing of large urban datasets, supporting 
 - **U.S. Census Bureau**: Population and demographic data
 
 ### 3.2 Data Processing Framework
-Apache Spark (PySpark 3.0+) was selected for its distributed processing capabilities and MLlib library. The analysis processes 129 Montana cities with 45 variables each.
+Apache Spark (PySpark 3.0+) was selected for its distributed processing capabilities and MLlib library. The analysis processes 129 US cities with 45 variables each.
 
 ### 3.3 Analytical Approach
 1. **Data Cleaning**: Sentinel value replacement, type casting, missing value handling
@@ -86,7 +86,7 @@ Apache Spark (PySpark 3.0+) was selected for its distributed processing capabili
 ## 4. Results
 
 ### 4.1 Descriptive Statistics
-Analysis of 129 Montana cities reveals:
+Analysis of 129 US cities reveals:
 - **Emissions Range**: 2.0 - 47.9 metric tons CO₂e per capita (mean: 8.5, median: 6.8)
 - **Miles Driven**: 1,328 - 44,023 miles per capita (mean: 4,642)
 - **Walkability**: 2.2 - 15.5 index score (mean: 7.6, median: 7.3)
@@ -127,7 +127,7 @@ The strong positive correlation between miles driven and emissions confirms vehi
 - **Linear Assumptions**: May not capture non-linear relationships
 - **Cross-sectional Data**: Cannot establish causality
 - **Unmeasured Variables**: EV adoption, fuel mix, building efficiency
-- **Geographic Scope**: Montana-specific; may not generalize nationwide
+- **Geographic Scope**: US cities-specific; may not generalize nationwide
 
 ### 5.3 Policy Implications
 Findings support targeted investments in pedestrian infrastructure and mixed-use development. Priority cities identified represent high-impact opportunities for emissions reduction.
@@ -136,7 +136,7 @@ Findings support targeted investments in pedestrian infrastructure and mixed-use
 
 ## 6. Conclusion
 
-This analysis demonstrates that vehicle dependence drives 80% of transportation emissions variance in Montana cities, while walkability improvements offer 20-30% mitigation potential. The identification of seven priority cities provides actionable guidance for urban sustainability planning. The big data methodology establishes a scalable framework for nationwide analysis.
+This analysis demonstrates that vehicle dependence drives 80% of transportation emissions variance in US cities, while walkability improvements offer 20-30% mitigation potential. The identification of seven priority cities provides actionable guidance for urban sustainability planning. The big data methodology establishes a scalable framework for nationwide analysis.
 
 ### 6.1 Future Research Directions
 1. Longitudinal analysis of walkability interventions
@@ -173,7 +173,7 @@ This analysis demonstrates that vehicle dependence drives 80% of transportation 
 |----------|---------|
 | **[RESULTS.md](RESULTS.md)** | 📊 Comprehensive results report with metrics, findings, conclusions |
 | **[METHODOLOGY.md](METHODOLOGY.md)** | 🔧 Technical implementation details, code walkthrough, scalability |
-| **[montana_analysis_pyspark.ipynb](montana_analysis_pyspark.ipynb)** | 📓 Executable notebook (run in Google Colab or local Jupyter) |
+| **[montana_analysis.ipynb](montana_analysis.ipynb)** | 📓 Executable notebook (run in Google Colab or local Jupyter) |
 | **[figures/](figures/)** | 🎨 EDA plots, correlation heatmaps, scatter plots |
 
 ### Repository Structure
@@ -184,7 +184,6 @@ montana-transportation-analysis/
 │   └── processed_city_data.parquet (8.1 MB)
 ├── notebooks/
 │   ├── montana_analysis.ipynb (pandas version)
-│   └── montana_analysis_pyspark.ipynb (Spark version)
 ├── figures/
 │   ├── distributions.png
 │   ├── correlation_heatmap.png
@@ -200,13 +199,12 @@ montana-transportation-analysis/
 
 ### System Requirements
 - Python 3.8+
-- Apache Spark 3.0+
 - 8GB RAM recommended
 - Google Colab compatible
 
 ### Execution Instructions
-1. Open `montana_analysis_pyspark.ipynb` in Google Colab
-2. Install dependencies: `pip install pyspark pandas numpy matplotlib seaborn plotly`
+1. Open `montana_analysis.ipynb` in Google Colab
+2. Install dependencies: `pip install pandas numpy matplotlib seaborn plotly`
 3. Run cells sequentially (data downloads automatically)
 4. Results generate automatically with embedded visualizations
 
@@ -224,9 +222,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Results Summary
 
 ### Data Analyzed
-- **Total Records**: 129 Montana cities
+- **Total Records**: 129 US cities
 - **Features Used**: 29 dimensions (population, emissions, walkability, fuel consumption, etc.)
-- **Geographic Scope**: Montana only (filtered via `state_abbr` = 'MT')
+- **Geographic Scope**: US cities (filtered via `state_abbr` = 'MT')
 
 ### Key Statistics
 | Metric | Value | Interpretation |
@@ -257,7 +255,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### 📓 Notebooks
 | File | Purpose | Status |
 |------|---------|--------|
-| `montana_analysis_pyspark.ipynb` | **Main project** - PySpark big data workflow with all outputs | ✅ Complete, all cells executed |
 | `montana_analysis.ipynb` | Alternative pandas-based analysis (simpler, no Spark) | ✅ Complete |
 
 ### 📊 Data Files
@@ -292,7 +289,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## How to Run
 
 ### 🚀 Google Colab (Recommended - Fastest Setup)
-1. Open [montana_analysis_pyspark.ipynb](montana_analysis_pyspark.ipynb) in your browser
+1. Open [montana_analysis.ipynb](montana_analysis.ipynb) in your browser
 2. Click: **File → Open in Colab**
 3. Connect to a Colab runtime (GPU recommended, but CPU works)
 4. Run cells sequentially (all dependencies auto-installed)
@@ -319,7 +316,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
    ```bash
    jupyter notebook
    ```
-5. Open `montana_analysis_pyspark.ipynb` and run cells sequentially
+5. Open `montana_analysis.ipynb` and run cells sequentially
 
 ### Alternative: Original Pandas Analysis
 For a simpler analysis without Spark (faster if data is small):
@@ -339,11 +336,11 @@ jupyter notebook montana_analysis.ipynb
 ├── 🔧 METHODOLOGY.md                         ← Technical implementation details
 │
 ├── 📓 Jupyter Notebooks
-│   ├── montana_analysis_pyspark.ipynb        ← MAIN: PySpark big data workflow (RUN THIS)
+
 │   └── montana_analysis.ipynb                ← Alternative: Pandas-based analysis
 │
 ├── 📁 Data Files
-│   ├── cleaned_full_city_data.csv            ← Input data (129 Montana cities, 29 features)
+│   ├── cleaned_full_city_data.csv            ← Input data (129 US cities, 29 features)
 │   ├── processed_city_data.csv               ← Output data (cleaned and normalized)
 │   ├── processed_city_data.parquet           ← Spark output (Parquet format for scalability)
 │   ├── full_city_data_DATA603.csv            ← Raw source data
@@ -371,11 +368,11 @@ jupyter notebook montana_analysis.ipynb
 **For Project Reviewers/Evaluators**:
 1. Start with **README.md** (this file) for overview
 2. Read **RESULTS.md** for comprehensive findings and conclusions
-3. Run **montana_analysis_pyspark.ipynb** in Colab to see live execution
+3. Run **montana_analysis.ipynb** in Colab to see live execution
 4. Reference **METHODOLOGY.md** for technical details
 
 **For Code Inspection**:
-1. Open **montana_analysis_pyspark.ipynb** to see all code and outputs
+1. Open **montana_analysis.ipynb** to see all code and outputs
 2. Study **METHODOLOGY.md** for algorithm explanations
 3. Check `figures/` for generated visualizations
 
@@ -477,9 +474,9 @@ requests>=2.26.0        # HTTP requests (for GitHub data download)
 If you use this code or data, please cite:
 
 ```bibtex
-@project{montana2026,
-  title={Montana Cities Transportation and Walkability Analysis},
-  author={Montana Transportation Analysis Team},
+@project{uscities2026,
+  title={US Cities Transportation and Walkability Analysis},
+  author={US Cities Transportation Analysis Team},
   year={2026},
   url={https://github.com/dimputp1/montana-transportation-analysis}
 }
@@ -532,7 +529,7 @@ This project is licensed under the **MIT License**. See LICENSE file for details
 
 ## Contact & Team
 
-**Project Owner**: Montana Transportation Analysis Team  
+**Project Owner**: US Cities Transportation Analysis Team  
 **Year**: Final Year Project Submission (2026)  
 **Institution**: [Your University/Organization]
 
@@ -548,7 +545,7 @@ For inquiries or collaboration:
 - **Apache Spark**: Open-source distributed computing framework
 - **Spark MLlib**: Machine learning library
 - **Google Colab**: Free cloud computing environment
-- **Montana City Data**: [DATA603 Project]
+- **US City Data**: [DATA603 Project]
 - **Walkability Index**: EPA National Walkability Index initiative
 
 ---

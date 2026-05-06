@@ -1,7 +1,7 @@
 # Methodology
 ## Technical Approach and Implementation Details
 
-**Project**: Montana Cities Transportation and Walkability Analysis  
+**Project**: US Cities Transportation and Walkability Analysis  
 **Framework**: Apache Spark (PySpark 3.0+)  
 **Environment**: Google Colab with GPU acceleration  
 **Date**: May 2, 2026
@@ -18,9 +18,9 @@ Pandas Read (file loading)
     ↓
 Spark DataFrame Creation (distributed)
     ↓
-State Filtering (Montana only)
+State Filtering (US cities subset)
     ↓
-Montana Dataset (129 cities)
+US Cities Dataset (129 cities)
 ```
 
 **Implementation**:
@@ -31,7 +31,7 @@ pandas_df = pd.read_csv('cleaned_full_city_data.csv')
 # Convert to Spark DataFrame for distributed processing
 spark_df = spark.createDataFrame(pandas_df)
 
-# Filter to Montana cities
+# Filter to US cities dataset
 spark_df = spark_df.filter(col('state_abbr') == 'MT')
 ```
 
@@ -310,7 +310,7 @@ output_df.to_csv('processed_city_data.csv', index=False)
 ### Spark Configuration
 ```python
 spark = SparkSession.builder \
-    .appName('MontanaWalkabilityAnalysis') \
+    .appName('USCitiesWalkabilityAnalysis') \
     .config('spark.driver.memory', '2g') \
     .config('spark.sql.shuffle.partitions', '4') \
     .getOrCreate()
@@ -376,7 +376,7 @@ np.random.seed(42)
 1. **Linear Model**: Assumes linear relationships; may miss non-linearities
 2. **Feature Completeness**: Missing EV adoption, fuel type, renewable energy
 3. **Temporal Data**: Cross-sectional (single time point); no trends
-4. **Geographic**: Montana only; limited generalization
+4. **Geographic**: US cities only; limited generalization
 
 ### Future Enhancements
 ```python
@@ -425,7 +425,7 @@ from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 
 This methodology demonstrates a production-grade machine learning pipeline using Apache Spark. The approach is reproducible, scalable, and generalizable to larger datasets. Code is committed to GitHub and can be extended with advanced techniques (ensemble methods, hyperparameter tuning, time-series forecasting) for enhanced predictive accuracy.
 
-**For Questions**: Refer to inline code comments in `montana_analysis_pyspark.ipynb`
+**For Questions**: Refer to inline code comments in `montana_analysis.ipynb`
 
 ---
 
@@ -501,7 +501,6 @@ montana-transportation-analysis/
 │   └── processed_city_data.parquet (8.1 MB)
 ├── notebooks/
 │   ├── montana_analysis.ipynb (pandas version)
-│   └── montana_analysis_pyspark.ipynb (Spark version)
 ├── figures/
 │   ├── distributions.png
 │   ├── correlation_heatmap.png
@@ -542,8 +541,8 @@ findspark.init()
 #### Local Development Setup
 ```bash
 # Create conda environment
-conda create -n montana-analysis python=3.8
-conda activate montana-analysis
+conda create -n us-cities-analysis python=3.8
+conda activate us-cities-analysis
 
 # Install dependencies
 pip install pyspark==3.0.3 pandas numpy matplotlib seaborn plotly
@@ -562,7 +561,7 @@ SELECT
   COUNT(CASE WHEN agg_combined_emitGHG_pC IS NULL THEN 1 END) as missing_emissions,
   COUNT(CASE WHEN miles_driven_pC IS NULL THEN 1 END) as missing_miles,
   COUNT(CASE WHEN wlk_NatWalkInd_avg IS NULL THEN 1 END) as missing_walkability
-FROM montana_cities;
+FROM us_cities;
 ```
 
 #### Outlier Detection
@@ -593,7 +592,7 @@ fig = px.scatter(
     size='population',
     color='miles_driven_pC',
     hover_name='city_name',
-    title='Montana Cities: Emissions vs Walkability',
+    title='US Cities: Emissions vs Walkability',
     labels={
         'wlk_NatWalkInd_avg': 'Walkability Index',
         'agg_combined_emitGHG_pC': 'GHG Emissions (MT CO₂e per capita)',
@@ -626,7 +625,7 @@ fig = px.bar(
     x='city_name',
     y='agg_combined_emitGHG_pC',
     color='wlk_NatWalkInd_avg',
-    title='Top 10 Montana Cities by GHG Emissions',
+    title='Top 10 US Cities by GHG Emissions',
     labels={
         'city_name': 'City',
         'agg_combined_emitGHG_pC': 'Emissions (MT CO₂e per capita)',
@@ -664,4 +663,4 @@ fig.write_html('figures/top_emissions_cities.html')
 
 **Document Version**: 1.0  
 **Last Updated**: May 2, 2026  
-**Authors**: Montana Transportation Analysis Team
+**Authors**: US Cities Transportation Analysis Team

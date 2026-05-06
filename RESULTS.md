@@ -1,8 +1,8 @@
 # Comprehensive Results Report
-## Montana Cities Transportation and Walkability Analysis - PySpark Big Data Workflow
+## US Cities Transportation and Walkability Analysis - PySpark Big Data Workflow
 
 **Project Date**: May 2, 2026  
-**Data Analyzed**: 129 Montana Cities  
+**Data Analyzed**: 129 US Cities  
 **Processing Framework**: Apache Spark (PySpark)  
 **ML Model**: Linear Regression (Spark ML)
 
@@ -10,14 +10,14 @@
 
 ## Executive Summary
 
-This report documents the complete results of a big data analysis investigating the relationship between transportation emissions and urban walkability across Montana cities. Using Apache Spark for distributed processing and Spark ML for predictive modeling, the analysis identified key drivers of greenhouse gas emissions and provides actionable insights for urban sustainability planning.
+This report documents the complete results of a big data analysis investigating the relationship between transportation emissions and urban walkability across US cities. Using Apache Spark for distributed processing and Spark ML for predictive modeling, the analysis identified key drivers of greenhouse gas emissions and provides actionable insights for urban sustainability planning.
 
 ---
 
 ## 1. Data Overview and Quality Metrics
 
 ### Dataset Characteristics
-- **Total Records**: 129 Montana cities
+- **Total Records**: 129 US cities
 - **Data Source**: City-level transportation and walkability datasets
 - **Processing Method**: Pandas → Spark DataFrame conversion for distributed processing
 
@@ -202,7 +202,7 @@ This report documents the complete results of a big data analysis investigating 
 
 ### For Policymakers
 1. **Data-Driven Investment**: Use miles-driven and walkability data to allocate sustainability funding
-2. **Regional Benchmarking**: Compare Montana cities to national walkability standards
+2. **Regional Benchmarking**: Compare US cities to national walkability standards
 3. **Accountability Metrics**: Track annual miles driven and walkability changes
 
 ### For Future Research
@@ -221,13 +221,13 @@ This report documents the complete results of a big data analysis investigating 
 - **Environment**: Google Colab (GPU-enabled execution)
 
 ### Reproducibility
-- All code in `montana_analysis_pyspark.ipynb` with execution outputs
+- All code in `montana_analysis.ipynb` with execution outputs
 - Data downloaded from GitHub repository (cleaned_full_city_data.csv)
 - Model trained with fixed random seed (seed=42)
 - All figures saved to `figures/` directory
 
 ### How to Reproduce
-1. Open `montana_analysis_pyspark.ipynb` in Google Colab
+1. Open `montana_analysis.ipynb` in Google Colab
 2. Install dependencies: `pip install pyspark pandas numpy matplotlib seaborn`
 3. Run cells sequentially; data auto-downloaded from GitHub
 4. Outputs and figures generated automatically
@@ -242,8 +242,7 @@ montana-transportation-analysis/
 ├── RESULTS.md                          # This comprehensive report
 ├── METHODOLOGY.md                      # Technical methodology details
 ├── montana_analysis.ipynb              # Original pandas-based analysis
-├── montana_analysis_pyspark.ipynb      # PySpark big data workflow (MAIN)
-├── cleaned_full_city_data.csv          # Processed Montana cities data
+├── cleaned_full_city_data.csv          # Processed US cities data
 ├── processed_city_data.csv             # Output from analysis
 ├── processed_city_data.parquet         # Spark-processed output (Parquet format)
 ├── figures/
@@ -259,7 +258,7 @@ montana-transportation-analysis/
 
 ## 10. Conclusion
 
-This big data analysis successfully demonstrates the relationship between transportation patterns (vehicle miles driven) and urban walkability on greenhouse gas emissions in Montana cities. Using Apache Spark for scalable processing and Spark ML for predictive modeling, we identified that:
+This big data analysis successfully demonstrates the relationship between transportation patterns (vehicle miles driven) and urban walkability on greenhouse gas emissions in US cities. Using Apache Spark for scalable processing and Spark ML for predictive modeling, we identified that:
 
 - **Vehicle dependence is the primary emissions driver** (r = 0.80+)
 - **Walkability improvements offer significant mitigation potential** (r = -0.40)
@@ -270,6 +269,6 @@ The analysis provides a replicable template for state-level transportation susta
 
 ---
 
-**Report Prepared By**: Montana Transportation Analysis Team  
+**Report Prepared By**: US Cities Transportation Analysis Team  
 **Date**: May 2, 2026  
 **Repository**: https://github.com/dimputp1/montana-transportation-analysis
